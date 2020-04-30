@@ -239,8 +239,8 @@ int main(int argc, char* argv[])
     file << mesh_widths[j] << "," << errors[j] << "\n";
   }
   file.close();
-  // std::string command = "mv Q1_errors.csv Documents/GitHub/";
-  // system(command);
+  std::string command = "mv Q1_errors.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Elliptical-PDEs/";
+  system(command.c_str());
 
 
 

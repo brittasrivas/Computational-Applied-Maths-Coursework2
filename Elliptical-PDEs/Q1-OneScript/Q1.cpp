@@ -204,6 +204,12 @@ int main(int argc, char* argv[])
 
     if (n==5)
     {
+
+
+      //TODO create u plot csv file
+
+
+      //TODO remove PRINTS
       std::cout << "\nn=5:\n";
       // print u_approx
       std::cout << "\nU approx:\n";
@@ -220,9 +226,10 @@ int main(int argc, char* argv[])
       }
     }
 
-    //print grid_function_error
-    std::cout << "\nh: " << h;
-    std::cout << "\nGridFunctionError: " << grid_function_error << "\n";
+    //TODO remove prints
+    // //print grid_function_error
+    // std::cout << "\nh: " << h;
+    // std::cout << "\nGridFunctionError: " << grid_function_error << "\n";
 
     delete[] u_approx;
     delete[] u_exact;
@@ -239,7 +246,7 @@ int main(int argc, char* argv[])
     file << mesh_widths[j] << "," << errors[j] << "\n";
   }
   file.close();
-  std::string command = "mv Q1_errors.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Elliptical-PDEs/";
+  std::string command = "mv Q1_errors.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Elliptical-PDEs/Q1-OneScript/";
   system(command.c_str());
 
 

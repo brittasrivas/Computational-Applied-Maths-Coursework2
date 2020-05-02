@@ -224,6 +224,7 @@ int main(int argc, char* argv[])
       {
         std::cout << u_exact[i] <<'\n';
       }
+      
     }
 
     //TODO remove prints

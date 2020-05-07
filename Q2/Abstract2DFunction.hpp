@@ -12,6 +12,8 @@ class Abstract2DFunction
 
     virtual double evaluateBoundary(double x, double y) = 0;
 
+    virtual double evaluateUexact(double x, double y) = 0;
+
 };
 
 #endif

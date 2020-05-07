@@ -21,6 +21,7 @@ PoissonPDE::PoissonPDE(const int n, const double length, Abstract2DFunction& aFu
 
   mFvec = new double[pow(mM,2)];
   mUvec = new double[pow(mM,2)];
+  mUvec_exact = new double[pow(mM,2)];
 
   mUapprox = new double[pow(mN,2)];
   mUexact = new double[pow(mN,2)];

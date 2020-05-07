@@ -16,6 +16,7 @@ class SourceFunction2: public Abstract2DFunction
     // Overriding pure virtual methods
     double evaluateF(double x, double y);
     double evaluateBoundary(double x, double y);
+    double evaluateUexact(double x, double y);
 
 };
 

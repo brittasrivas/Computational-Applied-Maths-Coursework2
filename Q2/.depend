@@ -1,0 +1,8 @@
+Abstract2DFunction.o: Abstract2DFunction.cpp Abstract2DFunction.hpp
+AbstractPDE.o: AbstractPDE.cpp AbstractPDE.hpp Abstract2DFunction.hpp
+PoissonPDE.o: PoissonPDE.cpp PoissonPDE.hpp AbstractPDE.hpp \
+  Abstract2DFunction.hpp
+SourceFunction2.o: SourceFunction2.cpp SourceFunction2.hpp \
+  Abstract2DFunction.hpp
+Driver.o: Driver.cpp PoissonPDE.hpp AbstractPDE.hpp \
+  Abstract2DFunction.hpp SourceFunction2.hpp

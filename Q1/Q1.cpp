@@ -224,7 +224,7 @@ int main(int argc, char* argv[])
       {
         std::cout << u_exact[i] <<'\n';
       }
-      
+
     }
 
     //TODO remove prints
@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
     file << mesh_widths[j] << "," << errors[j] << "\n";
   }
   file.close();
-  std::string command = "mv Q1_errors.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Elliptical-PDEs/Q1-OneScript/";
+  std::string command = "mv Q1_errors.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Q1";
   system(command.c_str());
 
 

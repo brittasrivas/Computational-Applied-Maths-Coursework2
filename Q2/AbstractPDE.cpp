@@ -79,11 +79,11 @@ void AbstractPDE::ConstructUvec_exact()
 {
   int k=0;
 
-  for (int j=1; j<mM; j++)
+  for (int j=1; j<=mM; j++)
   {
-    for (int i=1; i<mM; i++)
+    for (int i=1; i<=mM; i++)
     {
-      mUexact[k] = (*mFunction).evaluateUexact(mMesh[i], mMesh[j]);
+      mUvec_exact[k] = (*mFunction).evaluateUexact(mMesh[i], mMesh[j]);
 
       k++;
     }
@@ -101,7 +101,7 @@ void AbstractPDE::CalculateError()
     sum += pow((mUvec_exact[i] - mUvec[i]),2.0);
   }
 
-  mErrorNorm = pow((h * sum), 0.5);
+  mErrorNorm = pow((mH * sum), 0.5);
 }
 
 
@@ -154,7 +154,7 @@ void AbstractPDE::SolvePDE()
   ConstructA();
   ConstructFvec();
   Gauss(); //includes AugmentA()
-  ConstructUvec_exact()
+  ConstructUvec_exact();
   CalculateError();
 
   // Creates arrays of U approximated and exact over the whole mesh, used for plotting graphs
@@ -191,4 +191,15 @@ double* AbstractPDE::GetUapprox()
 double* AbstractPDE::GetUexact()
 {
   return mUexact;
+}
+
+//for debugging //TODO REMOVE
+double* AbstractPDE::GetUvec_approx()
+{
+  return mUvec;
+}
+
+double* AbstractPDE::GetUvec_exact()
+{
+  return mUvec_exact;
 }

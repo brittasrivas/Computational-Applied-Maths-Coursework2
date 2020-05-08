@@ -1,5 +1,5 @@
-#ifndef AbstractPDE
-#define AbstractPDE
+#ifndef ABSTRACTPDE
+#define ABSTRACTPDE
 
 #include <vector>
 #include "Abstract2DFunction.hpp"
@@ -18,6 +18,10 @@ class AbstractPDE
     double* GetMesh();
     double* GetUapprox();
     double* GetUexact();
+
+    //for debugging //TODO REMOVE 
+    double* GetUvec_approx();
+    double* GetUvec_exact();
 
 
 

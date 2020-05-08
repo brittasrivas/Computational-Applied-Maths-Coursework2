@@ -35,11 +35,13 @@ PoissonPDE::~PoissonPDE()
 
 
 PoissonPDE::void ConstructA()
+/* Creates matrix A for finite difference approximation of the Poisson equation. */
 {
   for (int i=0; i<pow(mM,2); i++)
   {
-    mA[i][i] = 4.0/pow(mH,2.0);
+    mA[i][i] = 4.0/pow(mH,2.0); // leading diagonal
 
+    // Other non-zero entries
     if ( ((i+1) < pow(mM,2)) && (((i+1) % mM) != 0) )
     {
       mA[i][i+1] = -1.0/pow(mH,2.0);
@@ -65,6 +67,7 @@ PoissonPDE::void ConstructA()
 
 
 PoissonPDE::void ConstructFvec()
+/* Creates vector F for finite difference approximation of the Poisson equation. */
 {
   int k=0;
 
@@ -72,8 +75,10 @@ PoissonPDE::void ConstructFvec()
   {
     for (int i=1; i<=mM; i++)
     {
-      Fvec[k] = (*mFunction).evaluateF(mMesh[i], mMesh[j]);
+      Fvec[k] = (*mFunction).evaluateF(mMesh[i], mMesh[j]); // f(x,y)
 
+      // Adjust for boundary terms
+      
       if (i==1) // add g(0,hj)/(h^2)
       {
         Fvec[k] += (*mFunction).evaluateBoundary(mMesh[i-1], (mH*j)) / pow(mH,2.0);

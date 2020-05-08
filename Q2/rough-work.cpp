@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 //MOD CHECK
   for(int i=0; i<20; i++)
   {
-    if ((i%5) != 0) //got rid of each multiple of 5 including 0
+    if ((i%5) != 0) //got rid of each multiple of 5, including 0
     {
       std::cout << i << "\n";
     }

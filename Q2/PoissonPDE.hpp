@@ -13,6 +13,7 @@ class PoissonPDE: public AbstractPDE
     ~PoissonPDE();
 
   protected:
+    // Overiding pure virtual methods
     void ConstructA();
     void ConstructFvec();
 

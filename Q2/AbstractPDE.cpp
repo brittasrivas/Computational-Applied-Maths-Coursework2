@@ -5,6 +5,8 @@
 
 
 void AbstractPDE::ConstructMesh()
+/* Creates array of mesh nodes in one direction.
+Will be used for both x-direction and y-direction since uniform mesh. */
 {
   for (int i=0; i<mN; i++)
   {
@@ -27,9 +29,9 @@ void AbstractPDE::AugmentA()
 void AbstractPDE::Gauss()
 /* Gauss function taken from martin-thorma.com */
 {
-  AugmentA();
+  AugmentA(); // A|b
 
-  int n = mA.size(); // number of rows in A
+  int n = mA.size(); // number of rows in matrix A
 
   for (int i=0; i<n; i++) {
         // Search for maximum in this column
@@ -73,6 +75,7 @@ void AbstractPDE::Gauss()
 
 
 void AbstractPDE::ConstructUvec_exact()
+/* Creates array of exact values of u(x,y) at interior mesh nodes. */
 {
   int k=0;
 
@@ -127,6 +130,7 @@ void AbstractPDE::ConstructUapprox()
 
 
 void AbstractPDE::ConstructUexact()
+/* Creates array of exact values of u(x,y) for the whole mesh. */
 {
   int k=0;
 
@@ -144,6 +148,7 @@ void AbstractPDE::ConstructUexact()
 
 
 void AbstractPDE::SolvePDE()
+/* Combines auxiliary functions to find Uvec approximation and its error. */
 {
   ConstructMesh();
   ConstructA();
@@ -152,6 +157,7 @@ void AbstractPDE::SolvePDE()
   ConstructUvec_exact()
   CalculateError();
 
+  // Creates arrays of U approximated and exact over the whole mesh, used for plotting graphs
   ConstructUapprox();
   ConstructUexact();
 }
@@ -170,6 +176,11 @@ double AbstractPDE::GetErrorNorm()
 double AbstractPDE::GetH()
 {
   return mH;
+}
+
+double* AbstractPDE::GetMesh()
+{
+  return mMesh;
 }
 
 double* AbstractPDE::GetUapprox()

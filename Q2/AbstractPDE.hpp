@@ -9,12 +9,13 @@ class AbstractPDE
 
   public:
 
-    void SolvePDE();
+    void SolvePDE(); // combines auxiliary functions to find Uvec approximation
 
 
     // Getters
     double GetErrorNorm();
     double GetH();
+    double* GetMesh();
     double* GetUapprox();
     double* GetUexact();
 
@@ -40,12 +41,12 @@ class AbstractPDE
 
     Abstract2DFunction* mFunction; // function pointer to f(x,y)
 
-    double* mMesh; //mesh in each direction for a square mesh
+    double* mMesh; //mesh nodes in each direction for a square mesh
     std::vector< std::vector<double> > mA; // matrix A
     double* mFvec; // vector F
     double* mUvec; // vector U approximation for interior mesh nodes
     double* mUvec_exact; // vector U exact for interior mesh nodes
-    double mErrorNorm; // 2-norm of Uapprox error
+    double mErrorNorm; // 2-norm of Uvec approximation error
 
     double* mUapprox; // vector U approximation for all mesh nodes - used to plot graph
     double* mUexact; // vector U exact for all mesh nodes - used to plot graph

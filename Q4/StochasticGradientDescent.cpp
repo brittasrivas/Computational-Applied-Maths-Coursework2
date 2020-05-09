@@ -40,6 +40,7 @@ double deriv_Cx_b(const double y, const double x, const double w, const double b
 }
 
 
+
 int main(int argc, char* argv[])
 {
   const int n = 3;
@@ -59,7 +60,9 @@ int main(int argc, char* argv[])
 
   double *costs, *ws, *bs;
 
-  double eta = 0.75;
+
+
+  double eta = 0.75; //learning rate
   int MaxIter = 64;
 
   costs = new double[MaxIter+1];
@@ -70,17 +73,30 @@ int main(int argc, char* argv[])
   costs[0] = cost_function(n, ys, xs, ws[0], bs[0]);
 
 
-  // Stochastic Gradient Descent Algorithm
-  int random;
-
-  for(int k=0; k<MaxIter; k++)
+  for (int j=0; j<5; j++)
   {
-    random = rand() % n;
+    if (j>0) // learning rate experiment
+    {
+      eta = eta/3.0;
+    }
 
-    ws[k+1] = ws[k] - eta*deriv_Cx_w(ys[random], xs[random], ws[k], bs[k]);
-    bs[k+1] = bs[k] - eta*deriv_Cx_b(ys[random], xs[random], ws[k], bs[k]);
+    // Stochastic Gradient Descent Algorithm
+    int random;
 
-    costs[k+1] = cost_function(n, ys, xs, ws[k+1], bs[k+1]);
+    for(int k=0; k<MaxIter; k++)
+    {
+      random = rand() % n;
+
+      ws[k+1] = ws[k] - eta*deriv_Cx_w(ys[random], xs[random], ws[k], bs[k]);
+      bs[k+1] = bs[k] - eta*deriv_Cx_b(ys[random], xs[random], ws[k], bs[k]);
+
+      costs[k+1] = cost_function(n, ys, xs, ws[k+1], bs[k+1]);
+    }
+
+    std::cout << "\n\neta: " << eta;
+    std::cout << "\n  w: " << ws[MaxIter];
+    std::cout << "\n  b: " << bs[MaxIter];
+
   }
 
 

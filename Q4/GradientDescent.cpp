@@ -49,9 +49,10 @@ int main(int argc, char* argv[])
 {
   const int n = 3;
   double eta = 0.75;
+  int MaxIter = 64;
   double w = 0.5;
   double b = 0.5;
-  int MaxIter = 64;
+
 
   double *x, *y;
   x = new double[n];
@@ -72,11 +73,12 @@ int main(int argc, char* argv[])
   file.open("Q4_GradientDescent.csv");
   assert(file.is_open());
   file << "iteration," << "w," << "b," << "cost" << "\n";
-  file << "0," << w << "," << b << "," << cost << "\n";   //TODO check prints initial values
+  file << "0," << w << "," << b << "," << cost << "\n";   //Initial values
 
 
   // Gradient Descent Algorithm
   double w_temp, b_temp;
+
   for(int k=0; k<MaxIter; k++)
   {
     w_temp = w - eta*deriv_w(n, y, x, w, b);

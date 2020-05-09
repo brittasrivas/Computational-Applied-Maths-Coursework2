@@ -2,6 +2,8 @@
 #include <cmath>
 #include <fstream>
 
+//FUNCTION PROTOTYPES
+
 double cost_function(const int n, const double* y, const double* x, const double w, const double b)
 {
   double sum = 0.0;

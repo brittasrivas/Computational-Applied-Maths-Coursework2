@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
+#include <stdlib.h> //used for rand()
 
 //FUNCTION PROTOTYPES
 
@@ -42,10 +43,8 @@ double deriv_Cx_b(const double y, const double x, const double w, const double b
 int main(int argc, char* argv[])
 {
   const int n = 3;
-  double eta = 0.75;
-  int MaxIter = 64;
-  double w = 0.5;
-  double b = 0.5;
+  const double w_0 = 0.5;
+  const double b_0 = 0.5;
 
 
   double *xs, *ys;
@@ -58,8 +57,32 @@ int main(int argc, char* argv[])
   ys[1] = 1.0;
   ys[2] = 1.0;
 
-  double cost;
-  cost = cost_function(n, ys, xs, w, b);
+  double *costs, *ws, *bs;
+
+  double eta = 0.75;
+  int MaxIter = 64;
+
+  costs = new double[MaxIter+1];
+  ws = new double[MaxIter+1];
+  bs = new double[MaxIter+1];
+  ws[0] = w_0;
+  bs[0] = b_0;
+  costs[0] = cost_function(n, ys, xs, ws[0], bs[0]);
+
+
+  // Stochastic Gradient Descent Algorithm
+  int random;
+
+  for(int k=0; k<MaxIter; k++)
+  {
+    random = rand() % n;
+
+    ws[k+1] = ws[k] - eta*deriv_Cx_w(ys[random], xs[random], ws[k], bs[k]);
+    bs[k+1] = bs[k] - eta*deriv_Cx_b(ys[random], xs[random], ws[k], bs[k]);
+
+    costs[k+1] = cost_function(n, ys, xs, ws[k+1], bs[k+1]);
+  }
+
 
 
   //Create results file
@@ -67,29 +90,12 @@ int main(int argc, char* argv[])
   file.open("Q4_StochasticGradientDescent.csv");
   assert(file.is_open());
   file << "iteration," << "w," << "b," << "cost" << "\n";
-  file << "0," << w << "," << b << "," << cost << "\n";   //Initial values
 
-
-  // Stochastic Gradient Descent Algorithm
-  double w_temp, b_temp;
-  int random;
-
-  for(int k=0; k<MaxIter; k++)
+  for (int k=0; k<(MaxIter+1); k++)
   {
-    random = rand() % n;
-
-    w_temp = w - eta*deriv_Cx_w(ys[random], xs[random], w, b);
-    b_temp = b - eta*deriv_Cx_b(ys[random], xs[random], w, b);
-
-    w = w_temp;
-    b = b_temp;
-    cost = cost_function(n, ys, xs, w, b);
-
-    file << k+1 << "," << w << "," << b << "," << cost << "\n";
+    file << k << "," << ws[k] << "," << bs[k] << "," << costs[k] << "\n";
   }
 
-
-  //Close file
   file.close();
   std::string command = "mv Q4_StochasticGradientDescent.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Q4";
   system(command.c_str());
@@ -97,6 +103,9 @@ int main(int argc, char* argv[])
 
   delete[] xs;
   delete[] ys;
+  delete[] costs;
+  delete[] ws;
+  delete[] bs;
 
   return 0;
 }

@@ -40,6 +40,22 @@ double deriv_Cx_b(const double y, const double x, const double w, const double b
 }
 
 
+void stochasticGradientDescent(const int n, const double eta, const int MaxIter,
+  double* ys, double* xs, double* costs, double* ws, double* bs)
+{
+  int random;
+
+  for(int k=0; k<MaxIter; k++)
+  {
+    random = rand() % n;
+
+    ws[k+1] = ws[k] - eta*deriv_Cx_w(ys[random], xs[random], ws[k], bs[k]);
+    bs[k+1] = bs[k] - eta*deriv_Cx_b(ys[random], xs[random], ws[k], bs[k]);
+
+    costs[k+1] = cost_function(n, ys, xs, ws[k+1], bs[k+1]);
+  }
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -65,40 +81,51 @@ int main(int argc, char* argv[])
   double eta = 0.75; //learning rate
   int MaxIter = 64;
 
-  costs = new double[MaxIter+1];
-  ws = new double[MaxIter+1];
-  bs = new double[MaxIter+1];
-  ws[0] = w_0;
-  bs[0] = b_0;
-  costs[0] = cost_function(n, ys, xs, ws[0], bs[0]);
 
-
-  for (int j=0; j<5; j++)
+  for (int i=0; i<4 ; i++)
   {
-    if (j>0) // learning rate experiment
+    if (i==0)
     {
-      eta = eta/3.0;
+      MaxIter = 64;
+    }
+    else if (i>0)
+    {
+      MaxIter = MaxIter*3;
     }
 
-    // Stochastic Gradient Descent Algorithm
-    int random;
+    costs = new double[MaxIter+1];
+    ws = new double[MaxIter+1];
+    bs = new double[MaxIter+1];
+    ws[0] = w_0;
+    bs[0] = b_0;
+    costs[0] = cost_function(n, ys, xs, ws[0], bs[0]);
 
-    for(int k=0; k<MaxIter; k++)
+    // Learning rate experiment
+    for (int j=0; j<4; j++)
     {
-      random = rand() % n;
+      if (j==0)
+      {
+        eta = 0.75;
+      }
+      else if (j>0)
+      {
+        eta = eta/3.0;
+      }
 
-      ws[k+1] = ws[k] - eta*deriv_Cx_w(ys[random], xs[random], ws[k], bs[k]);
-      bs[k+1] = bs[k] - eta*deriv_Cx_b(ys[random], xs[random], ws[k], bs[k]);
+      // Stochastic Gradient Descent Algorithm
+      stochasticGradientDescent(n, eta, MaxIter, ys, xs, costs, ws, bs);
 
-      costs[k+1] = cost_function(n, ys, xs, ws[k+1], bs[k+1]);
+      std::cout << "\n\nMaxIter: " << MaxIter;
+      std::cout << "\neta: " << eta;
+      std::cout << "\n                w: " << ws[MaxIter];
+      std::cout << "\n                b: " << bs[MaxIter];
+
     }
-
-    std::cout << "\n\neta: " << eta;
-    std::cout << "\n  w: " << ws[MaxIter];
-    std::cout << "\n  b: " << bs[MaxIter];
 
   }
 
+  // From the experiments, taking MaxIter: 1728 & eta: 0.0277778
+  // converged close to w=1 & b=1/6 as per the LSQ minimizer estimation
 
 
   //Create results file

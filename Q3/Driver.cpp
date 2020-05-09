@@ -21,13 +21,18 @@ void printvector(int n, double* vector)
 int main(int argc, char* argv[])
 {
   int n;
+  double nu, beta, gamma;
   double length, h, error;
   double *mesh_nodes, *u_approx, *u_exact;
   int iterations;
 
   iterations = 5;
 
-  SourceFunction3* f3 = new SourceFunction3(); // intialise function object
+  nu = 0.01;
+  beta = 1.0;
+  gamma = 0.25;
+
+  SourceFunction3* f3 = new SourceFunction3(nu, beta, gamma); // intialise function object
 
   //Create error results file
   std::ofstream file;

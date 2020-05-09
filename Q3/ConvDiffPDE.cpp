@@ -7,8 +7,9 @@
 //Specialised Constructor
 ConvDiffPDE::ConvDiffPDE(const int n, const double length, Abstract2DFunction& aFunction)
 {
-  assert(n>=2);
+  assert(n>=3);
   assert(length>0);
+
   mN = n;
   mM = mN-2;
   mLength = length;
@@ -38,29 +39,35 @@ ConvDiffPDE::~ConvDiffPDE()
 void ConvDiffPDE::ConstructA()
 /* Creates matrix A for finite difference approximation of the Convection-Diffusion-Reaction equation. */
 {
+  double nu, beta, gamma;
+
+  nu = (*mFunction).GetNu();
+  beta = (*mFunction).GetBeta();
+  gamma = (*mFunction).GetGamma();
+
   for (int i=0; i<pow(mM,2); i++)
   {
-    mA[i][i] = 4.0/pow(mH,2.0); // leading diagonal
+    mA[i][i] = ((4.0*nu)/pow(mH,2.0)) + gamma; // leading diagonal
 
-    // Other non-zero entries
+    // Other non-zero entries in each row
     if ( ((i+1) < pow(mM,2)) && (((i+1) % mM) != 0) )
     {
-      mA[i][i+1] = -1.0/pow(mH,2.0);
+      mA[i][i+1] = (-1.0*nu)/pow(mH,2.0) + (beta/mH); //TODO NOTE MOVED BETA TERM HERE RATHER THAN A[i][i]
     }
 
     if ((i+mM) < pow(mM,2))
     {
-      mA[i][i+mM] = -1.0/pow(mH,2.0);
+      mA[i][i+mM] = (-1.0*nu)/pow(mH,2.0);
     }
 
     if ( ((i-1)>=0) && ((i % mM) != 0) )
     {
-      mA[i][i-1] = -1.0/pow(mH,2.0);
+      mA[i][i-1] = ((-1.0*nu)/pow(mH,2.0)) - (beta/mH);
     }
 
     if ((i-mM) >= 0)
     {
-      mA[i][i-mM] = -1.0/pow(mH,2.0);
+      mA[i][i-mM] = (-1.0*nu)/pow(mH,2.0);
     }
 
   }
@@ -78,27 +85,7 @@ void ConvDiffPDE::ConstructFvec()
     {
       mFvec[k] = (*mFunction).evaluateF(mMesh[i], mMesh[j]); // f(x,y)
 
-      // Adjust for boundary terms
-
-      if (i==1) // add g(0,hj)/(h^2)
-      {
-        mFvec[k] += (*mFunction).evaluateBoundary(mMesh[i-1], (mH*j)) / pow(mH,2.0);
-      }
-
-      if (i==mM) // add g((m+1)h,hj)/(h^2)
-      {
-        mFvec[k] += (*mFunction).evaluateBoundary(mMesh[i+1], (mH*j)) / pow(mH,2.0);
-      }
-
-      if (j==1) // add g(hi,0)/(h^2)
-      {
-        mFvec[k] += (*mFunction).evaluateBoundary((mH*i), mMesh[j-1]) / pow(mH,2.0);
-      }
-
-      if (j==mM) // add g(hi,(m+1)h)/(h^2)
-      {
-        mFvec[k] += (*mFunction).evaluateBoundary((mH*i), mMesh[j+1]) / pow(mH,2.0);
-      }
+      // Since zero Dirichlet boundaries, no need to adjust for boundary terms
 
       k++;
     }

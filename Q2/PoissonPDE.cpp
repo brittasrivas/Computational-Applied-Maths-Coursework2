@@ -7,7 +7,7 @@
 //Specialised Constructor
 PoissonPDE::PoissonPDE(const int n, const double length, Abstract2DFunction& aFunction)
 {
-  assert(n>=2);
+  assert(n>=3);
   assert(length>0);
   mN = n;
   mM = mN-2;
@@ -42,7 +42,7 @@ void PoissonPDE::ConstructA()
   {
     mA[i][i] = 4.0/pow(mH,2.0); // leading diagonal
 
-    // Other non-zero entries
+    // Other non-zero entries in each row
     if ( ((i+1) < pow(mM,2)) && (((i+1) % mM) != 0) )
     {
       mA[i][i+1] = -1.0/pow(mH,2.0);

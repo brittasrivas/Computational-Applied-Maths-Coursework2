@@ -17,7 +17,6 @@ class ConvDiffPDE: public AbstractPDE
     void ConstructA();
     void ConstructFvec();
 
-
 };
 
 #endif

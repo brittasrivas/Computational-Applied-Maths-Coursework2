@@ -14,6 +14,10 @@ class Abstract2DFunction
 
     virtual double evaluateUexact(double x, double y) = 0;
 
+    virtual double GetNu() = 0;
+    virtual double GetBeta() = 0;
+    virtual double GetGamma() = 0;
+
 };
 
 #endif

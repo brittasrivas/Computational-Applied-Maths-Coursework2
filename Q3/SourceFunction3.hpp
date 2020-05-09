@@ -8,7 +8,7 @@ class SourceFunction3: public Abstract2DFunction
   public:
 
     // Constructor
-    SourceFunction3();
+    SourceFunction3(double nu, double beta, double gamma);
 
     // Destructor
     ~SourceFunction3();
@@ -17,6 +17,16 @@ class SourceFunction3: public Abstract2DFunction
     double evaluateF(double x, double y);
     double evaluateBoundary(double x, double y);
     double evaluateUexact(double x, double y);
+
+    //Getters
+    double GetNu();
+    double GetBeta();
+    double GetGamma();
+
+  protected:
+    double mNu;
+    double mBeta;
+    double mGamma;
 
 };
 

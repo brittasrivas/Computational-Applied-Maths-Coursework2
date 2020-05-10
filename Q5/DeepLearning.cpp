@@ -7,8 +7,11 @@
 //TODO FUNCTION PROTOTYPES
 //TODO MOVE MATRIX FUNCTIONS INTO SEPARATE FILE
 
-void printMatrix(const std::vector< std::vector<double> > M, const int r, const int c)
+void printMatrix(const std::vector< std::vector<double> > M)
 {
+  int r = M.size();
+  int c = M[0].size();
+
   for (int i=0; i<r; i++)
   {
     for (int j=0; j<c; j++)
@@ -70,10 +73,39 @@ double* vector_pointwise_mult(const int n, const double* v1, const double* v2)
   return ans;
 }
 
-std::vector< std::vector<double> > matrix_transpose(std::vector< std::vector<double> > M)
+std::vector< std::vector<double> > matrix_transpose(const std::vector< std::vector<double> > M)
 {
-  //TODO figure out function return matrix
+  int m = M.size();
+  int n = M[0].size();
+  std::vector< std::vector<double> > M_transp(n, std::vector<double>(m));
+
+  for (int i=0; i<m; i++)
+  {
+    for (int j=0; j<n; j++)
+    {
+      M_transp[j][i] = M[i][j];
+    }
+  }
+
+  return M_transp;
 }
+
+
+double vector_norm(const double* v, const int n)
+/* Calculates Euclidean norm of given vector v of length n. */
+{
+  double norm = 0.0; //intialise norm
+
+  for (int i=0; i<n; i++)
+  {
+    norm += pow(v[i], 2.0);
+  }
+
+  norm = pow(norm, 0.5);
+
+  return norm;
+}
+
 
 void initialiseData(double* x1, double* x2, double* y1, double* y2)
 {
@@ -165,7 +197,7 @@ void computeZ(double* z, const int m, const double* a_old, const double* b, cons
 
 
 
-double* activate(double* a_old, std::vector< std::vector<double> > W, double* b)
+double* activate(const double* a_old, const std::vector< std::vector<double> > W, const double* b)
 {
   int m = W.size();
   double *z, *a_new;
@@ -187,7 +219,7 @@ double* activate(double* a_old, std::vector< std::vector<double> > W, double* b)
 double* activate_deriv(const int n, const double* a)
 /* Find derivative of a=sigma(z) where a is a vector of length n. */
 {
-  double deriv;
+  double *deriv;
   deriv = new double[n];
 
   for(int i=0; i<n; i++)
@@ -198,7 +230,95 @@ double* activate_deriv(const int n, const double* a)
   return deriv;
 }
 
+void W_update(std::vector< std::vector<double> > &W, const double eta,
+  const double* delta, const double* a)
+{
+  int m = W.size();
+  int n = W[0].size();
 
+  for (int i=0; i<m; i++)
+  {
+    for (int j=0; j<n; j++)
+    {
+      W[i][j] -= eta * delta[i] * a[j];
+    }
+  }
+
+}
+
+
+void b_update(double* b, const int n, const double eta, const double* delta)
+{
+  for (int i=0; i<n; i++)
+  {
+    b[i] -= eta * delta[i];
+  }
+
+}
+
+
+double cost_Cx_function(double* a2, double* a3, double* a4,
+  const std::vector< std::vector<double> > W2,
+  const std::vector< std::vector<double> > W3,
+  const std::vector< std::vector<double> > W4,
+  const double* b2, const double* b3, const double* b4,
+  const double* x, const double* y)
+{
+
+  double cost_Cx;
+  double* diff;
+  diff = new double[2];
+
+  a2 = activate(x,W2,b2);
+  a3 = activate(a2,W3,b3);
+  a4 = activate(a3,W4,b4);
+
+  diff = vector_minus(2, y, a4);
+  cost_Cx = vector_norm(diff, 2);
+  cost_Cx = 0.5 * pow(cost_Cx, 2.0);
+
+  delete[] diff;
+
+  return cost_Cx;
+}
+
+
+double cost_function(double* a2, double* a3, double* a4,
+  const std::vector< std::vector<double> > W2,
+  const std::vector< std::vector<double> > W3,
+  const std::vector< std::vector<double> > W4,
+  const double* b2, const double* b3, const double* b4,
+  const int N, const double* x1, const double* x2,
+  const double* y1, const double* y2)
+{
+  double cost = 0.0; //intialise cost
+  double cost_Cx;
+  double *x, *y;
+  x = new double[2];
+  y = new double[2];
+
+  for (int k=0; k<N; k++)
+  {
+    x[0] = x1[k];
+    x[1] = x2[k];
+    y[0] = y1[k];
+    y[1] = y2[k];
+
+    cost_Cx = cost_Cx_function(a2, a3, a4, W2, W3, W4, b2, b3, b4, x, y);
+
+    cost += cost_Cx;
+  }
+
+  cost = cost / (double)N;
+
+  delete[] x;
+  delete[] y;
+
+  return cost;
+}
+
+
+/*-----------------------------------------------------------------------------*/
 
 int main(int argc, char* argv[])
 {
@@ -227,18 +347,18 @@ int main(int argc, char* argv[])
 
   //TODO REMOVE PRINTS
   std::cout << "\nW2: \n";
-  printMatrix(W2, 2, 2);
+  printMatrix(W2);
   std::cout << "\nW3: \n";
-  printMatrix(W3, 3, 2);
+  printMatrix(W3);
   std::cout << "\nW4: \n";
-  printMatrix(W4, 2, 3);
+  printMatrix(W4);
 
 
   double eta = 0.05;
   int Niter = 1e6;
 
   //Initialise arrays for auxiliary steps in SGD
-  double *costs_x, *x, *y;
+  double *costs, *x, *y;
   double *a2, *a3, *a4;
   double *delta2, *delta3, *delta4;
   double *delta2_term2 , *delta3_term2 , *delta4_term2;
@@ -252,10 +372,10 @@ int main(int argc, char* argv[])
   delta2 = new double[2];
   delta3 = new double[3];
   delta4 = new double[2];
+
   delta2_term2 = new double[2];
   delta3_term2 = new double[3];
   delta4_term2 = new double[2];
-  std::vector< std::vector<double> > W2_transp(2, std::vector<double>(2));
   std::vector< std::vector<double> > W3_transp(2, std::vector<double>(3));
   std::vector< std::vector<double> > W4_transp(3, std::vector<double>(2));
 
@@ -282,15 +402,38 @@ int main(int argc, char* argv[])
     // Backward pass
     delta4 = activate_deriv(2, a4);
     delta4_term2 = vector_minus(2, a4, y);
-    delta4 = vector_pointwise_mult(delta4, delta4_term2);
+    delta4 = vector_pointwise_mult(2, delta4, delta4_term2);
 
     delta3 = activate_deriv(3, a3);
+    W4_transp = matrix_transpose(W4);
+    delta3_term2 = matvec_mult(W4_transp, delta4);
+    delta3 = vector_pointwise_mult(3, delta3, delta3_term2);
 
+    delta2 = activate_deriv(2, a2);
+    W3_transp = matrix_transpose(W3);
+    delta2_term2 = matvec_mult(W3_transp, delta3);
+    delta2 = vector_pointwise_mult(2, delta2, delta2_term2);
 
+    // Gradient Step
+    W_update(W2, eta, delta2, x);
+    W_update(W3, eta, delta3, a2);
+    W_update(W4, eta, delta4, a3);
 
+    b_update(b2, 2, eta, delta2);
+    b_update(b3, 3, eta, delta3);
+    b_update(b4, 2, eta, delta4);
+
+    // Monitor progress on Cost
+    costs[k] = cost_function(a2, a3, a4, W2, W3, W4, b2, b3, b4, N, x1, x2, y1, y2);
 
   }
 
+
+  // Print
+  for (int i=0; i<Niter; i+= 1e4)
+  {
+    std::cout << i << ": " << costs[i] << "\n";
+  }
 
 
 
@@ -315,6 +458,7 @@ int main(int argc, char* argv[])
   delete[] delta2_term2;
   delete[] delta3_term2;
   delete[] delta4_term2;
+
   //Note: do not need to delete matrices - std::vector destructor will clear them.
 
   return 0;

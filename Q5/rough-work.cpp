@@ -2,6 +2,21 @@
 #include <stdlib.h> //used for rand()
 #include <vector>
 
+void printMatrix(const std::vector< std::vector<double> > M)
+{
+  int r = M.size();
+  int c = M[0].size();
+
+  for (int i=0; i<r; i++)
+  {
+    for (int j=0; j<c; j++)
+    {
+      std::cout << M[i][j] << "\t";
+    }
+    std::cout << "\n";
+  }
+}
+
 
 void fillMatrix(std::vector< std::vector<double> > &M)
 {
@@ -46,6 +61,23 @@ Matrix M is size mxn. */
   return ans;
 }
 
+std::vector< std::vector<double> > matrix_transpose(const std::vector< std::vector<double> > M)
+{
+  //TODO figure out function return matrix
+  int m = M.size();
+  int n = M[0].size();
+  std::vector< std::vector<double> > M_transp(n, std::vector<double>(m));
+
+  for (int i=0; i<m; i++)
+  {
+    for (int j=0; j<n; j++)
+    {
+      M_transp[j][i] = M[i][j];
+    }
+  }
+
+  return M_transp;
+}
 
 
 int main(int argc, char* argv[])
@@ -59,14 +91,7 @@ int main(int argc, char* argv[])
 
   fillMatrix(M);
 
-  for (int i=0; i<2; i++)
-  {
-    for (int j=0; j<3; j++)
-    {
-      std::cout << M[i][j] << "\t";
-    }
-    std::cout << "\n";
-  }
+  printMatrix(M);
 
   std::cout << "No of rows of matrix: " << M.size() << "\n";
   std::cout << "No of cols of matrix: " << M[0].size() << "\n";
@@ -90,6 +115,12 @@ int main(int argc, char* argv[])
   {
     std::cout << ans[i] << "\n";
   }
+
+  std::vector< std::vector<double> > M_transp(3, std::vector<double>(2));
+  M_transp = matrix_transpose(M);
+
+  printMatrix(M_transp);
+
 
   delete[] vector;
   delete[] ans;

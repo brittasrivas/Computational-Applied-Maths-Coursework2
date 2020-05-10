@@ -131,7 +131,7 @@ void computeZ(double* z, const int m, const double* a_old, const double* b, cons
 
 
 
-double* activate(double* a_old, std::vector< std::vector<double> > W, double* b,)
+double* activate(double* a_old, std::vector< std::vector<double> > W, double* b)
 {
   int m = W.size();
   double *z, *a_new;
@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
 
 
   double eta = 0.05;
-  double Niter = 1e6;
+  int Niter = 1e6;
 
   //Initialise arrays for auxiliary steps in SGD
   double *costs_x, *x, *y;

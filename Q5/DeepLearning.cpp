@@ -19,6 +19,62 @@ void printMatrix(const std::vector< std::vector<double> > M, const int r, const 
   }
 }
 
+double* matvec_mult(const std::vector< std::vector<double> > M, const double* v)
+/* Calculates Matrix-Vector multiplication: M*v
+Matrix M is size mxn. */
+{
+  int m = M.size();
+  int n = M[0].size();
+  double *ans;
+  ans = new double[m];
+
+  for(int i=0; i<m; i++)
+  {
+    double row_sum = 0.0;
+    for (int j=0; j<n; j++)
+    {
+      row_sum += M[i][j] * v[j];
+    }
+    ans[i] = row_sum;
+  }
+
+  return ans;
+}
+
+
+double* vector_minus(const int n, const double* v1, const double* v2)
+/* Calculates v1 - v2 where both are of length n. */
+{
+  double* ans;
+  ans = new double[n];
+
+  for (int i=0; i<n; i++)
+  {
+    ans[i] = v1[i] - v2[i];
+  }
+
+  return ans;
+}
+
+double* vector_pointwise_mult(const int n, const double* v1, const double* v2)
+/* Calculates v1 .* v2 where both are of length n. */
+{
+  double* ans;
+  ans = new double[n];
+
+  for (int i=0; i<n; i++)
+  {
+    ans[i] = v1[i] * v2[i];
+  }
+
+  return ans;
+}
+
+std::vector< std::vector<double> > matrix_transpose(std::vector< std::vector<double> > M)
+{
+  //TODO figure out function return matrix
+}
+
 void initialiseData(double* x1, double* x2, double* y1, double* y2)
 {
   x1[0] = 0.1;
@@ -96,28 +152,6 @@ void initialiseParams(std::vector< std::vector<double> > &W2,
 
 }
 
-double* matvec_mult(const std::vector< std::vector<double> > M, const double* v)
-/* Calculates Matrix-Vector multiplication: M*v
-Matrix M is size mxn. */
-{
-  int m = M.size();
-  int n = M[0].size();
-  double *ans;
-  ans = new double[m];
-
-  for(int i=0; i<m; i++)
-  {
-    double row_sum = 0.0;
-    for (int j=0; j<n; j++)
-    {
-      row_sum += M[i][j] * v[j];
-    }
-    ans[i] = row_sum;
-  }
-
-  return ans;
-}
-
 void computeZ(double* z, const int m, const double* a_old, const double* b, const std::vector< std::vector<double> > W)
 /* calculates z = Wa + b */
 {
@@ -147,6 +181,21 @@ double* activate(double* a_old, std::vector< std::vector<double> > W, double* b)
 
   delete[] z;
   return a_new;
+}
+
+
+double* activate_deriv(const int n, const double* a)
+/* Find derivative of a=sigma(z) where a is a vector of length n. */
+{
+  double deriv;
+  deriv = new double[n];
+
+  for(int i=0; i<n; i++)
+  {
+    deriv[i] = a[i]*(1.0 - a[i]);
+  }
+
+  return deriv;
 }
 
 
@@ -192,8 +241,9 @@ int main(int argc, char* argv[])
   double *costs_x, *x, *y;
   double *a2, *a3, *a4;
   double *delta2, *delta3, *delta4;
+  double *delta2_term2 , *delta3_term2 , *delta4_term2;
 
-  costs_x = new double[Niter];
+  costs = new double[Niter];
   x = new double[2];
   y = new double[2];
   a2 = new double[2];
@@ -202,6 +252,12 @@ int main(int argc, char* argv[])
   delta2 = new double[2];
   delta3 = new double[3];
   delta4 = new double[2];
+  delta2_term2 = new double[2];
+  delta3_term2 = new double[3];
+  delta4_term2 = new double[2];
+  std::vector< std::vector<double> > W2_transp(2, std::vector<double>(2));
+  std::vector< std::vector<double> > W3_transp(2, std::vector<double>(3));
+  std::vector< std::vector<double> > W4_transp(3, std::vector<double>(2));
 
 
 
@@ -223,7 +279,13 @@ int main(int argc, char* argv[])
     a3 = activate(a2,W3,b3);
     a4 = activate(a3,W4,b4);
 
-    // Back pass
+    // Backward pass
+    delta4 = activate_deriv(2, a4);
+    delta4_term2 = vector_minus(2, a4, y);
+    delta4 = vector_pointwise_mult(delta4, delta4_term2);
+
+    delta3 = activate_deriv(3, a3);
+
 
 
 
@@ -241,7 +303,7 @@ int main(int argc, char* argv[])
   delete[] b2;
   delete[] b3;
   delete[] b4;
-  delete[] costs_x;
+  delete[] costs;
   delete[] x;
   delete[] y;
   delete[] a2;
@@ -250,6 +312,9 @@ int main(int argc, char* argv[])
   delete[] delta2;
   delete[] delta3;
   delete[] delta4;
+  delete[] delta2_term2;
+  delete[] delta3_term2;
+  delete[] delta4_term2;
   //Note: do not need to delete matrices - std::vector destructor will clear them.
 
   return 0;

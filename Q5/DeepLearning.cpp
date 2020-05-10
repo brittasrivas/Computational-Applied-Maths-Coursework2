@@ -2,6 +2,10 @@
 #include <cmath>
 #include <vector>
 #include <stdlib.h> //used for rand()
+#include <cmath>
+
+//TODO FUNCTION PROTOTYPES
+//TODO MOVE MATRIX FUNCTIONS INTO SEPARATE FILE
 
 void printMatrix(const std::vector< std::vector<double> > M, const int r, const int c)
 {
@@ -92,6 +96,60 @@ void initialiseParams(std::vector< std::vector<double> > &W2,
 
 }
 
+double* matvec_mult(const std::vector< std::vector<double> > M, const double* v)
+/* Calculates Matrix-Vector multiplication: M*v
+Matrix M is size mxn. */
+{
+  int m = M.size();
+  int n = M[0].size();
+  double *ans;
+  ans = new double[m];
+
+  for(int i=0; i<m; i++)
+  {
+    double row_sum = 0.0;
+    for (int j=0; j<n; j++)
+    {
+      row_sum += M[i][j] * v[j];
+    }
+    ans[i] = row_sum;
+  }
+
+  return ans;
+}
+
+void computeZ(double* z, const int m, const double* a_old, const double* b, const std::vector< std::vector<double> > W)
+/* calculates z = Wa + b */
+{
+  z = matvec_mult(W, a_old);
+
+  for (int i=0; i<m; i++)
+  {
+    z[i] += b[i];
+  }
+}
+
+
+
+double* activate(double* a_old, std::vector< std::vector<double> > W, double* b,)
+{
+  int m = W.size();
+  double *z, *a_new;
+  z = new double[m];
+  a_new = new double[m];
+
+  computeZ(z, m, a_old, b, W);
+
+  for (int i=0; i<m; i++)
+  {
+    a_new[i] = 1.0 / (1.0 + exp(-1.0*z[i]));
+  }
+
+  delete[] z;
+  return a_new;
+}
+
+
 
 int main(int argc, char* argv[])
 {
@@ -133,25 +191,40 @@ int main(int argc, char* argv[])
   //Initialise arrays for auxiliary steps in SGD
   double *costs_x, *x, *y;
   double *a2, *a3, *a4;
-  double *delta1, *delta2, *delta3;
+  double *delta2, *delta3, *delta4;
 
   costs_x = new double[Niter];
   x = new double[2];
   y = new double[2];
-  //TODO ALLOCATE MEMORY FOR A AND DELTAS
+  a2 = new double[2];
+  a3 = new double[3];
+  a4 = new double[2];
+  delta2 = new double[2];
+  delta3 = new double[3];
+  delta4 = new double[2];
 
 
-  //STOCHASTIC GRADIENT Descent
+
+  //STOCHASTIC GRADIENT DESCENT
   int random;
   srand((unsigned)time(NULL));
 
   for (int k=0; k<Niter; k++)
   {
+    // Pick an (x,y) data pair at random
     random = rand() % N;
     x[0] = x1[random];
     x[1] = x2[random];
     y[0] = y1[random];
     y[1] = y2[random];
+
+    // Forward pass
+    a2 = activate(x,W2,b2);
+    a3 = activate(a2,W3,b3);
+    a4 = activate(a3,W4,b4);
+
+    // Back pass
+
 
 
   }
@@ -171,6 +244,12 @@ int main(int argc, char* argv[])
   delete[] costs_x;
   delete[] x;
   delete[] y;
+  delete[] a2;
+  delete[] a3;
+  delete[] a4;
+  delete[] delta2;
+  delete[] delta3;
+  delete[] delta4;
   //Note: do not need to delete matrices - std::vector destructor will clear them.
 
   return 0;

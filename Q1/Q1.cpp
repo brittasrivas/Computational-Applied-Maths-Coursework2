@@ -1,12 +1,28 @@
 #include <iostream>
 #include <cmath>
-#include <fstream> // Used to create file of data
+#include <fstream>
 #include <string>
 
-//TODO Function Prototypes
+//Function Prototypes
+double* createMesh(const int n, const double h, const double x_start, const double x_end);
+double* solveTridiagonal(const int m, double *d, double *u, double *l, double *Fvec);
+void calculateGridFunctionError(const int m, const double h,
+  const double* Uvec_full, const double* Uvec_exact, double &grid_function_error);
+void testCoeffcientMatrix(const int m, const double h, double* A_d, double* A_u, double* A_l);
+double testExactU(double x);
+void outputExactUvec(const int n, const double* mesh, double* Uvec_exact);
+double testExactF(double x);
+void testFvec(const int m, const double alpha, const double beta, const double h,
+  const double* mesh, double* Fvec);
+double solvePDE(const int n, const double x_start, const double x_end,
+  double &h, double* Uvec_full, double* Uvec_exact, double* mesh);
 
+
+
+/*----------------------------GENERAL FUNCTIONS-------------------------------*/
 
 double* createMesh(const int n, const double h, const double x_start, const double x_end)
+/* Outputs mesh of n nodes between x_start and x_end with mesh width h. */
 {
   double* mesh;
   mesh = new double[n];
@@ -46,7 +62,25 @@ double* solveTridiagonal(const int m, double *d, double *u, double *l, double *F
 }
 
 
+void calculateGridFunctionError(const int m, const double h,
+  const double* Uvec_full, const double* Uvec_exact, double &grid_function_error)
+/* Calculates grid function error norm between approximation and exact functions. */
+{
+  double sum=0.0;
+
+  for(int i=1; i<=m; i++)
+  {
+    sum += pow((Uvec_exact[i] - Uvec_full[i]),2.0);
+  }
+
+  grid_function_error = pow((h * sum), 0.5);
+}
+
+
+/*----------------CODE VERIFICATION TEST FUNCTIONS----------------------------*/
+
 void testCoeffcientMatrix(const int m, const double h, double* A_d, double* A_u, double* A_l)
+/* Constructs Matrix A */
 {
   for (int i=0; i<m-1; i++)
   {
@@ -62,12 +96,15 @@ void testCoeffcientMatrix(const int m, const double h, double* A_d, double* A_u,
 
 
 double testExactU(double x)
+/* Exact u(x) function */
 {
   return x - sin(M_PI*x);
 }
 
 
 void outputExactUvec(const int n, const double* mesh, double* Uvec_exact)
+/* Evaluates exact u function for the interior mesh nodes and
+saves in Uvec_exact */
 {
   for(int i=0; i<n; i++)
   {
@@ -77,12 +114,15 @@ void outputExactUvec(const int n, const double* mesh, double* Uvec_exact)
 
 
 double testExactF(double x)
+/* Evaluates f(x) */
 {
   return (-1 * pow(M_PI,2.0) * sin(M_PI*x));
 }
 
 
-void testFvec(const int m, const double alpha, const double beta, const double h, const double* mesh, double* Fvec)
+void testFvec(const int m, const double alpha, const double beta, const double h,
+  const double* mesh, double* Fvec)
+/* Constructs vector F */
 {
    for (int i=0; i<m; i++)
    {
@@ -95,22 +135,12 @@ void testFvec(const int m, const double alpha, const double beta, const double h
 }
 
 
-void calculateGridFunctionError(const int m, const double h,
-  const double* Uvec_full, const double* Uvec_exact, double &grid_function_error)
-{
-  double sum=0.0;
 
-  for(int i=1; i<=m; i++)
-  {
-    sum += pow((Uvec_exact[i] - Uvec_full[i]),2.0);
-  }
+/*---------------------------PDE SOLVE FUNCTION-------------------------------*/
 
-  grid_function_error = pow((h * sum), 0.5);
-}
-
-
-double executeQuestion(const int n, const double x_start, const double x_end,
+double solvePDE(const int n, const double x_start, const double x_end,
   double &h, double* Uvec_full, double* Uvec_exact, double* mesh)
+/* Solves the matrix equation AU = F and returns the error norm of the approximation. */
 {
   int m = n-2;
   h = (x_end - x_start)/double(m+1);
@@ -140,7 +170,7 @@ double executeQuestion(const int n, const double x_start, const double x_end,
   Uvec = new double[m];
   Uvec = solveTridiagonal(m, A_d, A_u, A_l, Fvec);
 
-  // U approx, including boundaries
+  // U approx, including boundaries - used to plot the graph
   Uvec_full[0] = alpha;
   Uvec_full[n-1] = beta;
 
@@ -150,7 +180,7 @@ double executeQuestion(const int n, const double x_start, const double x_end,
   }
 
 
-  // U exact, including boundaries
+  // U exact, including boundaries - used to plot the graph
   outputExactUvec(n, mesh, Uvec_exact);
 
 
@@ -200,7 +230,7 @@ int main(int argc, char* argv[])
     u_approx = new double[n];
     u_exact = new double[n];
 
-    grid_function_error = executeQuestion(n, x_start, x_end, h, u_approx, u_exact, mesh);
+    grid_function_error = solvePDE(n, x_start, x_end, h, u_approx, u_exact, mesh);
 
     mesh_widths[k] = h;
     errors[k] = grid_function_error;
@@ -224,35 +254,15 @@ int main(int argc, char* argv[])
       std::string command2 = "mv Q1_function.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Q1";
       system(command2.c_str());
 
-
-      //TODO remove PRINTS
-      // std::cout << "\nn=5:\n";
-      // // print u_approx
-      // std::cout << "\nU approx:\n";
-      // for (int i=0; i<n; i++)
-      // {
-      //   std::cout << u_approx[i] <<'\n';
-      // }
-      //
-      // // print u_exact
-      // std::cout << "\nU exact:\n";
-      // for (int i=0; i<n; i++)
-      // {
-      //   std::cout << u_exact[i] <<'\n';
-      // }
-
     }
 
-    //TODO remove prints
-    // //print grid_function_error
-    // std::cout << "\nh: " << h;
-    // std::cout << "\nGridFunctionError: " << grid_function_error << "\n";
 
     delete[] u_approx;
     delete[] u_exact;
     delete[] mesh;
 
   }
+
 
   //Create results file
   std::ofstream file;

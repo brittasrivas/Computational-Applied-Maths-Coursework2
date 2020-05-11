@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <fstream> // Used to create file of data
+#include <string>
 
 #include "ConvDiffPDE.hpp"
 #include "SourceFunction3.hpp"

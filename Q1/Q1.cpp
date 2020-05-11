@@ -66,6 +66,7 @@ double testExactU(double x)
   return x - sin(M_PI*x);
 }
 
+
 void outputExactUvec(const int n, const double* mesh, double* Uvec_exact)
 {
   for(int i=0; i<n; i++)
@@ -167,6 +168,8 @@ double executeQuestion(const int n, const double x_start, const double x_end,
 }
 
 
+/*----------------------------------MAIN--------------------------------------*/
+
 int main(int argc, char* argv[])
 {
 
@@ -190,13 +193,12 @@ int main(int argc, char* argv[])
     x_start = 0.0;
     x_end = 1.0;
 
+    double *mesh;
+    mesh = new double[n]; //mesh of length n
+
     double *u_approx, *u_exact;
     u_approx = new double[n];
     u_exact = new double[n];
-
-    // Mesh
-    double *mesh;
-    mesh = new double[n]; //mesh of length n
 
     grid_function_error = executeQuestion(n, x_start, x_end, h, u_approx, u_exact, mesh);
 
@@ -206,7 +208,7 @@ int main(int argc, char* argv[])
 
     if (n==5)
     {
-
+      mesh = createMesh(n, h, x_start, x_end);
 
       //Create results file for plots when n=5
       std::ofstream file2;
@@ -256,10 +258,12 @@ int main(int argc, char* argv[])
   std::ofstream file;
   file.open("Q1_errors.csv");
   assert(file.is_open());
-  file << "h," << "error" << "\n";
+  file << "h," << "error," << "log(h)," << "log(error)," << "log(h^2)" << "\n";
   for(int j=0; j<maxIterations; j++)
   {
-    file << mesh_widths[j] << "," << errors[j] << "\n";
+    file << mesh_widths[j] << "," << errors[j] << ","
+      << log(mesh_widths[j]) << "," << log(errors[j]) << ","
+      << log(pow(mesh_widths[j],2.0)) << "\n";
   }
   file.close();
   std::string command = "mv Q1_errors.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Q1";

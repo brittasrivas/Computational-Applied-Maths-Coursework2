@@ -94,7 +94,8 @@ void testFvec(const int m, const double alpha, const double beta, const double h
 }
 
 
-void calculateGridFunctionError(const int m, const double h, const double* Uvec_full, const double* Uvec_exact, double &grid_function_error)
+void calculateGridFunctionError(const int m, const double h,
+  const double* Uvec_full, const double* Uvec_exact, double &grid_function_error)
 {
   double sum=0.0;
 
@@ -107,16 +108,14 @@ void calculateGridFunctionError(const int m, const double h, const double* Uvec_
 }
 
 
-double executeQuestion(const int n, const double x_start, const double x_end, double &h, double* Uvec_full, double* Uvec_exact)
+double executeQuestion(const int n, const double x_start, const double x_end,
+  double &h, double* Uvec_full, double* Uvec_exact, double* mesh)
 {
   int m = n-2;
   h = (x_end - x_start)/double(m+1);
   double alpha = 0.0;
   double beta = 1.0;
 
-  // Mesh
-  double *mesh;
-  mesh = new double[n]; //mesh of length n
   mesh = createMesh(n, h, x_start, x_end);
 
   // F vector
@@ -158,7 +157,6 @@ double executeQuestion(const int n, const double x_start, const double x_end, do
   double grid_function_error;
   calculateGridFunctionError(m, h, Uvec_full, Uvec_exact, grid_function_error);
 
-  delete[] mesh;
   delete[] A_d;
   delete[] A_u;
   delete[] A_l;
@@ -196,7 +194,11 @@ int main(int argc, char* argv[])
     u_approx = new double[n];
     u_exact = new double[n];
 
-    grid_function_error = executeQuestion(n, x_start, x_end, h, u_approx, u_exact);
+    // Mesh
+    double *mesh;
+    mesh = new double[n]; //mesh of length n
+
+    grid_function_error = executeQuestion(n, x_start, x_end, h, u_approx, u_exact, mesh);
 
     mesh_widths[k] = h;
     errors[k] = grid_function_error;
@@ -206,24 +208,36 @@ int main(int argc, char* argv[])
     {
 
 
-      //TODO create u plot csv file
+      //Create results file for plots when n=5
+      std::ofstream file2;
+      file2.open("Q1_function.csv");
+      assert(file2.is_open());
+      file2 << "mesh," << "u_approx," << "u_exact" << "\n";
+
+      for(int i=0; i<n; i++)
+      {
+        file2 << mesh[i] << "," << u_approx[i] << "," << u_exact[i] << "\n";
+      }
+      file2.close();
+      std::string command2 = "mv Q1_function.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Q1";
+      system(command2.c_str());
 
 
       //TODO remove PRINTS
-      std::cout << "\nn=5:\n";
-      // print u_approx
-      std::cout << "\nU approx:\n";
-      for (int i=0; i<n; i++)
-      {
-        std::cout << u_approx[i] <<'\n';
-      }
-
-      // print u_exact
-      std::cout << "\nU exact:\n";
-      for (int i=0; i<n; i++)
-      {
-        std::cout << u_exact[i] <<'\n';
-      }
+      // std::cout << "\nn=5:\n";
+      // // print u_approx
+      // std::cout << "\nU approx:\n";
+      // for (int i=0; i<n; i++)
+      // {
+      //   std::cout << u_approx[i] <<'\n';
+      // }
+      //
+      // // print u_exact
+      // std::cout << "\nU exact:\n";
+      // for (int i=0; i<n; i++)
+      // {
+      //   std::cout << u_exact[i] <<'\n';
+      // }
 
     }
 
@@ -234,6 +248,7 @@ int main(int argc, char* argv[])
 
     delete[] u_approx;
     delete[] u_exact;
+    delete[] mesh;
 
   }
 
@@ -249,7 +264,6 @@ int main(int argc, char* argv[])
   file.close();
   std::string command = "mv Q1_errors.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Q1";
   system(command.c_str());
-
 
 
   return 0;

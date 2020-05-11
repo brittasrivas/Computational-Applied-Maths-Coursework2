@@ -3,9 +3,12 @@
 #include <vector>
 #include <stdlib.h> //used for rand()
 #include <cmath>
+#include <fstream>
 
 //TODO FUNCTION PROTOTYPES
-//TODO MOVE MATRIX FUNCTIONS INTO SEPARATE FILE
+
+
+/*------------------------GENERAL MATRIX FUNCTIONS----------------------------*/
 
 void printMatrix(const std::vector< std::vector<double> > M)
 {
@@ -107,6 +110,9 @@ double vector_norm(const double* v, const int n)
 }
 
 
+
+/*-------------------------SGD ALGORTIHM FUNCTIONS----------------------------*/
+
 void initialiseData(double* x1, double* x2, double* y1, double* y2)
 {
   x1[0] = 0.1;
@@ -138,6 +144,7 @@ void initialiseData(double* x1, double* x2, double* y1, double* y2)
   y2[5] = y2[6] = y2[7] = y2[8] = y2[9] = 1.0;
 
 }
+
 
 void initialiseParams(std::vector< std::vector<double> > &W2,
   std::vector< std::vector<double> > &W3,
@@ -184,6 +191,7 @@ void initialiseParams(std::vector< std::vector<double> > &W2,
 
 }
 
+
 void computeZ(double* z, const int m, const double* a_old, const double* b, const std::vector< std::vector<double> > W)
 /* calculates z = Wa + b */
 {
@@ -229,6 +237,7 @@ double* activate_deriv(const int n, const double* a)
 
   return deriv;
 }
+
 
 void W_update(std::vector< std::vector<double> > &W, const double eta,
   const double* delta, const double* a)
@@ -318,10 +327,11 @@ double cost_function(double* a2, double* a3, double* a4,
 }
 
 
-/*-----------------------------------------------------------------------------*/
+/*----------------------------------MAIN--------------------------------------*/
 
 int main(int argc, char* argv[])
 {
+  std::cout << "This algorithm takes approximately 5mins to run...\n";
   //INITIALISE DATA
   int N = 10; // No. of data points
 
@@ -334,7 +344,6 @@ int main(int argc, char* argv[])
   initialiseData(x1, x2, y1, y2);
 
   //INITIALISE PARAMETERS
-  //double W2[2][2], W3[3][2], W4[2][3]; //TODO REMOVE
   std::vector< std::vector<double> > W2(2, std::vector<double>(2));
   std::vector< std::vector<double> > W3(3, std::vector<double>(2));
   std::vector< std::vector<double> > W4(2, std::vector<double>(3));
@@ -346,12 +355,12 @@ int main(int argc, char* argv[])
   initialiseParams(W2, W3, W4, b2, b3, b4);
 
   //TODO REMOVE PRINTS
-  std::cout << "\nW2: \n";
-  printMatrix(W2);
-  std::cout << "\nW3: \n";
-  printMatrix(W3);
-  std::cout << "\nW4: \n";
-  printMatrix(W4);
+  // std::cout << "\nW2: \n";
+  // printMatrix(W2);
+  // std::cout << "\nW3: \n";
+  // printMatrix(W3);
+  // std::cout << "\nW4: \n";
+  // printMatrix(W4);
 
 
   double eta = 0.05;
@@ -429,13 +438,62 @@ int main(int argc, char* argv[])
   }
 
 
-  // Print
-  for (int i=0; i<Niter; i+= 1e4)
+  //Create Cost results file
+  std::ofstream file;
+  file.open("Q5_DeepLearning.csv");
+  assert(file.is_open());
+  file << "iteration," << "cost," << "log(cost)\n";
+
+  for (int i=0; i<Niter; i+= (-1+1e4))
   {
-    std::cout << i << ": " << costs[i] << "\n";
+    file << i+1 << "," << costs[i] << "," << log(costs[i]) << "\n";
   }
 
+  file.close();
+  std::string command = "mv Q5_DeepLearning.csv Documents/GitHub/Computational-Applied-Maths-Coursework2/Q5";
+  system(command.c_str());
 
+
+  //Check classification
+  std::cout << "Classifications\n";
+  for (int k=0; k<N; k++)
+  {
+    x[0] = x1[k];
+    x[1] = x2[k];
+    y[0] = y1[k];
+    y[1] = y2[k];
+
+    a2 = activate(x,W2,b2);
+    a3 = activate(a2,W3,b3);
+    a4 = activate(a3,W4,b4);
+
+
+    std::cout << "  x_" << k+1 << ": ";
+
+    if (fabs(a4[0]) > fabs(a4[1]))
+    {
+      std::cout << "A\n";
+    }
+    else // Note: if output was a draw then default assigns to category B
+    {
+      std::cout << "B\n";
+    }
+
+  }
+
+  //TODO REMOVE NOTE BELOW
+  //output
+  // Classifications
+  // x_1: B
+  // x_2: B
+  // x_3: B
+  // x_4: A
+  // x_5: A
+  // x_6: B
+  // x_7: B
+  // x_8: B
+  // x_9: B
+  // x_10: B
 
 
 

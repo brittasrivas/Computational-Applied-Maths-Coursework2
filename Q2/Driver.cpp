@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 
   for(int k=0; k<iterations; k++)
   {
-    n = 3 + int(pow(2,k)); // no. of nodes in square mesh along each direction, note: minimum 3 nodes
+    n = 5 * (2*(k+1)-1); // no. of nodes in square mesh along each direction, note: minimum 3 nodes
     length = 1.0; // square domain (0,1) x (0,1)
 
     PoissonPDE* pde = new PoissonPDE(n, length, *f2); // initialise PDE object

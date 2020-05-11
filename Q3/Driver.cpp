@@ -38,12 +38,12 @@ int main(int argc, char* argv[])
   std::ofstream file;
   file.open("Q3_errors.csv");
   assert(file.is_open());
-  file << "h," << "error," << "log(h)," << "log(error)," << "log(h^0.5)" <<  "\n";
+  file << "h," << "error," << "log(h)," << "log(error)," << "log(h^2)" <<  "\n";
 
 
   for(int k=0; k<iterations; k++)
   {
-    n = 3 + int(pow(2,k)); // no. of nodes in square mesh along each direction, note: minimum 3 nodes
+    n = 5 * (2*(k+1)-1); // no. of nodes in square mesh along each direction, note: minimum 3 nodes
     length = 1.0; // square domain (0,1) x (0,1)
 
     ConvDiffPDE* pde = new ConvDiffPDE(n, length, *f3); // initialise PDE object
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     error = (*pde). GetErrorNorm();
 
     // save result to file
-    file << h << "," << error << "," << log(h) << "," << log(error) << "," << log(pow(h,0.5)) << "\n";
+    file << h << "," << error << "," << log(h) << "," << log(error) << "," << log(pow(h,2.0)) << "\n";
 
     std::cout<< "n = " << n << "\n";
     std::cout<< " h = " << h << "\n";

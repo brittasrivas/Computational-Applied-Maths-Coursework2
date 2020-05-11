@@ -7,17 +7,6 @@
 #include "SourceFunction2.hpp"
 
 
-void printvector(int n, double* vector)
-{
-  std::cout << "\n";
-
-  for(int i=0; i<n; i++)
-  {
-    std::cout << vector[i] << "\n";
-  }
-}
-
-
 
 int main(int argc, char* argv[])
 {
@@ -62,28 +51,11 @@ int main(int argc, char* argv[])
       u_approx = new double[int(pow(n,2))];
       u_exact = new double[int(pow(n,2))];
 
-      // //TODO REMOVE AND REINSTATE ABOVE
-      // u_approx = new double[int(pow(n-2,2))];
-      // u_exact = new double[int(pow(n-2,2))];
-
       mesh_nodes = (*pde).GetMesh();
 
       u_approx = (*pde).GetUapprox();
       u_exact = (*pde).GetUexact();
 
-      // //TODO REMOVE AND REINSTATE ABOVE
-      // u_approx = (*pde).GetUvec_approx();
-      // u_exact = (*pde).GetUvec_exact();
-
-      //TODO REMOVE PRINTS
-      // std::cout<< "\nMesh:";
-      // printvector(n, mesh_nodes);
-      // std::cout<< "\nU_approx:";
-      // // printvector(int(pow(n,2)), u_approx);
-      // printvector(int(pow(n-2,2)), u_approx);
-      // std::cout<< "\nU_exact:";
-      // // printvector(int(pow(n,2)), u_exact);
-      // printvector(int(pow(n-2,2)), u_exact);
     }
 
 

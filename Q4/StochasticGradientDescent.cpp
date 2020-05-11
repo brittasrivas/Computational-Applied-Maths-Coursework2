@@ -4,6 +4,15 @@
 #include <stdlib.h> //used for rand()
 
 //FUNCTION PROTOTYPES
+double Func(const double x, const double w, const double b);
+double cost_x(const double y, const double x, const double w, const double b);
+double cost_function(const int n, const double* ys, const double* xs, const double w, const double b);
+double deriv_Cx_w(const double y, const double x, const double w, const double b);
+double deriv_Cx_b(const double y, const double x, const double w, const double b);
+void stochasticGradientDescent(const int n, const double eta, const int MaxIter,
+  double* ys, double* xs, double* costs, double* ws, double* bs);
+
+
 
 double Func(const double x, const double w, const double b)
 {
@@ -84,6 +93,7 @@ int main(int argc, char* argv[])
 
   for (int i=0; i<4 ; i++)
   {
+    // Max iterations experiment
     if (i==0)
     {
       MaxIter = 64;

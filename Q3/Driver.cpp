@@ -7,16 +7,6 @@
 #include "SourceFunction3.hpp"
 
 
-void printvector(int n, double* vector)
-{
-  std::cout << "\n";
-
-  for(int i=0; i<n; i++)
-  {
-    std::cout << vector[i] << "\n";
-  }
-}
-
 
 
 int main(int argc, char* argv[])

@@ -6,7 +6,42 @@
 #include <fstream>
 #include <string>
 
-//TODO FUNCTION PROTOTYPES
+//FUNCTION PROTOTYPES
+void printMatrix(const std::vector< std::vector<double> > M);
+double* matvec_mult(const std::vector< std::vector<double> > M, const double* v);
+double* vector_minus(const int n, const double* v1, const double* v2);
+double* vector_pointwise_mult(const int n, const double* v1, const double* v2);
+std::vector< std::vector<double> > matrix_transpose(const std::vector< std::vector<double> > M);
+double vector_norm(const double* v, const int n);
+
+void initialiseData(double* x1, double* x2, double* y1, double* y2);
+void initialiseParams(std::vector< std::vector<double> > &W2,
+  std::vector< std::vector<double> > &W3,
+  std::vector< std::vector<double> > &W4,
+  double *b2, double *b3, double *b4);
+void computeZ(double* z, const int m, const double* a_old, const double* b,
+  const std::vector< std::vector<double> > W);
+double* activate(const double* a_old, const std::vector< std::vector<double> > W, const double* b);
+double* activate_deriv(const int n, const double* a);
+void W_update(std::vector< std::vector<double> > &W, const double eta,
+  const double* delta, const double* a);
+void b_update(double* b, const int n, const double eta, const double* delta);
+double cost_Cx_function(double* a2, double* a3, double* a4,
+  const std::vector< std::vector<double> > W2,
+  const std::vector< std::vector<double> > W3,
+  const std::vector< std::vector<double> > W4,
+  const double* b2, const double* b3, const double* b4,
+  const double* x, const double* y);
+double cost_function(double* a2, double* a3, double* a4,
+  const std::vector< std::vector<double> > W2,
+  const std::vector< std::vector<double> > W3,
+  const std::vector< std::vector<double> > W4,
+  const double* b2, const double* b3, const double* b4,
+  const int N, const double* x1, const double* x2,
+  const double* y1, const double* y2);
+
+
+
 
 
 /*------------------------GENERAL MATRIX FUNCTIONS----------------------------*/
@@ -193,7 +228,8 @@ void initialiseParams(std::vector< std::vector<double> > &W2,
 }
 
 
-void computeZ(double* z, const int m, const double* a_old, const double* b, const std::vector< std::vector<double> > W)
+void computeZ(double* z, const int m, const double* a_old, const double* b,
+  const std::vector< std::vector<double> > W)
 /* calculates z = Wa + b */
 {
   z = matvec_mult(W, a_old);
@@ -355,15 +391,6 @@ int main(int argc, char* argv[])
 
   initialiseParams(W2, W3, W4, b2, b3, b4);
 
-  //TODO REMOVE PRINTS
-  // std::cout << "\nW2: \n";
-  // printMatrix(W2);
-  // std::cout << "\nW3: \n";
-  // printMatrix(W3);
-  // std::cout << "\nW4: \n";
-  // printMatrix(W4);
-
-
   double eta = 0.05;
   int Niter = 1e6;
 
@@ -481,21 +508,6 @@ int main(int argc, char* argv[])
     }
 
   }
-
-  //TODO REMOVE NOTE BELOW
-  //output
-  // Classifications
-  // x_1: B
-  // x_2: B
-  // x_3: B
-  // x_4: A
-  // x_5: A
-  // x_6: B
-  // x_7: B
-  // x_8: B
-  // x_9: B
-  // x_10: B
-
 
 
   delete[] x1;

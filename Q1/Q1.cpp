@@ -4,7 +4,8 @@
 #include <string>
 
 //Function Prototypes
-double* createMesh(const int n, const double h, const double x_start, const double x_end);
+double* createMesh(const int n, const double h, const double x_start,
+  const double x_end);
 double* solveTridiagonal(const int m, double *d, double *u, double *l, double *Fvec);
 void calculateGridFunctionError(const int m, const double h,
   const double* Uvec_full, const double* Uvec_exact, double &grid_function_error);
@@ -21,7 +22,8 @@ double solvePDE(const int n, const double x_start, const double x_end,
 
 /*----------------------------GENERAL FUNCTIONS-------------------------------*/
 
-double* createMesh(const int n, const double h, const double x_start, const double x_end)
+double* createMesh(const int n, const double h, const double x_start,
+  const double x_end)
 /* Outputs mesh of n nodes between x_start and x_end with mesh width h. */
 {
   double* mesh;
@@ -37,7 +39,8 @@ double* createMesh(const int n, const double h, const double x_start, const doub
 }
 
 
-double* solveTridiagonal(const int m, double *d, double *u, double *l, double *Fvec)
+double* solveTridiagonal(const int m, double *d, double *u, double *l,
+  double *Fvec)
 // Solve Ax=b for A tridiagonal represented by diagonal vectors d, u and l.
 // Algorithm from Epperson 2013, Section 2.6.
 {
@@ -63,8 +66,9 @@ double* solveTridiagonal(const int m, double *d, double *u, double *l, double *F
 
 
 void calculateGridFunctionError(const int m, const double h,
-  const double* Uvec_full, const double* Uvec_exact, double &grid_function_error)
-/* Calculates grid function error norm between approximation and exact functions. */
+  const double* Uvec_full, const double* Uvec_exact,
+  double &grid_function_error)
+/* Calculates grid function error norm between approx and exact functions. */
 {
   double sum=0.0;
 
@@ -79,7 +83,8 @@ void calculateGridFunctionError(const int m, const double h,
 
 /*----------------CODE VERIFICATION TEST FUNCTIONS----------------------------*/
 
-void testCoeffcientMatrix(const int m, const double h, double* A_d, double* A_u, double* A_l)
+void testCoeffcientMatrix(const int m, const double h, double* A_d, double* A_u,
+  double* A_l)
 /* Constructs Matrix A */
 {
   for (int i=0; i<m-1; i++)
@@ -120,14 +125,15 @@ double testExactF(double x)
 }
 
 
-void testFvec(const int m, const double alpha, const double beta, const double h,
-  const double* mesh, double* Fvec)
+void testFvec(const int m, const double alpha, const double beta,
+  const double h, const double* mesh, double* Fvec)
 /* Constructs vector F */
 {
    for (int i=0; i<m; i++)
    {
      Fvec[i] = testExactF(mesh[i+1]);
-     //Note use mesh[i+1] since mesh is of length n, whilst Fvec is of length m (i.e. excludes first and last nodes in mesh)
+     //Note use mesh[i+1] since mesh is of length n, whilst Fvec is of length m
+     //(i.e. excludes first and last nodes in mesh)
    }
 
    Fvec[0] += alpha/(pow(h,2.0));
@@ -140,7 +146,7 @@ void testFvec(const int m, const double alpha, const double beta, const double h
 
 double solvePDE(const int n, const double x_start, const double x_end,
   double &h, double* Uvec_full, double* Uvec_exact, double* mesh)
-/* Solves the matrix equation AU = F and returns the error norm of the approximation. */
+/* Solves AU = F and returns the error norm of the approximation. */
 {
   int m = n-2;
   h = (x_end - x_start)/double(m+1);
@@ -230,7 +236,8 @@ int main(int argc, char* argv[])
     u_approx = new double[n];
     u_exact = new double[n];
 
-    grid_function_error = solvePDE(n, x_start, x_end, h, u_approx, u_exact, mesh);
+    grid_function_error = solvePDE(n, x_start, x_end, h, u_approx,
+      u_exact, mesh);
 
     mesh_widths[k] = h;
     errors[k] = grid_function_error;

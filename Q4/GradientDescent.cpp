@@ -4,6 +4,10 @@
 #include <string>
 
 //FUNCTION PROTOTYPES
+double cost_function(const int n, const double* y, const double* x, const double w, const double b);
+double deriv_w(const int n, const double* y, const double* x, const double w, const double b);
+double deriv_b(const int n, const double* y, const double* x, const double w, const double b);
+
 
 double cost_function(const int n, const double* y, const double* x, const double w, const double b)
 {

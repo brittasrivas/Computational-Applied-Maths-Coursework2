@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
   std::ofstream file;
   file.open("Q3_errors.csv");
   assert(file.is_open());
-  file << "h," << "error," << "log(h)," << "log(error)" << "\n";
+  file << "h," << "error," << "log(h)," << "log(error)," << "log(h^0.5)" <<  "\n";
 
 
   for(int k=0; k<iterations; k++)
@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     error = (*pde). GetErrorNorm();
 
     // save result to file
-    file << h << "," << error << "," << log(h) << "," << log(error) << "\n";
+    file << h << "," << error << "," << log(h) << "," << log(error) << "," << log(pow(h,0.5)) << "\n";
 
     std::cout<< "n = " << n << "\n";
     std::cout<< " h = " << h << "\n";
@@ -66,28 +66,10 @@ int main(int argc, char* argv[])
       u_approx = new double[int(pow(n,2))];
       u_exact = new double[int(pow(n,2))];
 
-      // //TODO REMOVE AND REINSTATE ABOVE
-      // u_approx = new double[int(pow(n-2,2))];
-      // u_exact = new double[int(pow(n-2,2))];
-
       mesh_nodes = (*pde).GetMesh();
 
       u_approx = (*pde).GetUapprox();
       u_exact = (*pde).GetUexact();
-
-      // //TODO REMOVE AND REINSTATE ABOVE
-      // u_approx = (*pde).GetUvec_approx();
-      // u_exact = (*pde).GetUvec_exact();
-
-      //TODO REMOVE PRINTS
-      // std::cout<< "\nMesh:";
-      // printvector(n, mesh_nodes);
-      // std::cout<< "\nU_approx:";
-      // // printvector(int(pow(n,2)), u_approx);
-      // printvector(int(pow(n-2,2)), u_approx);
-      // std::cout<< "\nU_exact:";
-      // // printvector(int(pow(n,2)), u_exact);
-      // printvector(int(pow(n-2,2)), u_exact);
     }
 
 

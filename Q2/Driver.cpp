@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
   std::ofstream file;
   file.open("Q2_errors.csv");
   assert(file.is_open());
-  file << "h," << "error," << "log(h)," << "log(error)" << "\n";
+  file << "h," << "error," << "log(h)," << "log(error)," << "log(h^2.0)" <<  "\n";
 
 
   for(int k=0; k<iterations; k++)
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
     error = (*pde). GetErrorNorm();
 
     // save result to file
-    file << h << "," << error << "," << log(h) << "," << log(error) << "\n";
+    file << h << "," << error << "," << log(h) << "," << log(error) << "," << log(pow(h,2.0)) << "\n";
 
     std::cout<< "n = " << n << "\n";
     std::cout<< " h = " << h << "\n";

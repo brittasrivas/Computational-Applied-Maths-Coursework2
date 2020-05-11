@@ -52,7 +52,7 @@ void ConvDiffPDE::ConstructA()
     // Other non-zero entries in each row
     if ( ((i+1) < pow(mM,2)) && (((i+1) % mM) != 0) )
     {
-      mA[i][i+1] = (-1.0*nu)/pow(mH,2.0) + (beta/mH); //TODO NOTE MOVED BETA TERM HERE RATHER THAN A[i][i]
+      mA[i][i+1] = (-1.0*nu)/pow(mH,2.0) + (beta/(2.0*mH)); //NOTE: I have moved the Beta term here from A[i][i]
     }
 
     if ((i+mM) < pow(mM,2))
@@ -62,7 +62,7 @@ void ConvDiffPDE::ConstructA()
 
     if ( ((i-1)>=0) && ((i % mM) != 0) )
     {
-      mA[i][i-1] = ((-1.0*nu)/pow(mH,2.0)) - (beta/mH);
+      mA[i][i-1] = ((-1.0*nu)/pow(mH,2.0)) - (beta/(2.0*mH));
     }
 
     if ((i-mM) >= 0)
